@@ -11,7 +11,7 @@ import java.util.List;
 @Service
 public interface HistoryRetro {
 
-    @GET("/patient/note/api/getbypatient/{id}")
+    @GET("/patient/note/api/retro/getbypatient/{id}")
     public Call<List<PatientNote>> getPatientHistory(@Path("id") int id);
 
 }

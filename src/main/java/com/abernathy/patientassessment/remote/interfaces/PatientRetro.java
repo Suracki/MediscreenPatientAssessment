@@ -9,7 +9,7 @@ import retrofit2.http.Path;
 @Service
 public interface PatientRetro {
 
-    @GET("/patient/api/get/{id}")
+    @GET("/patient/api/retro/get/{id}")
     public Call<Patient> getPatient(@Path("id") int id);
 
 }
