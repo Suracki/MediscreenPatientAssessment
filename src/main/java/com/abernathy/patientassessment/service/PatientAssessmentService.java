@@ -26,6 +26,7 @@ public class PatientAssessmentService {
     }
 
     public PatientAssessment assessPatientRisk(int patId) throws PatientNotFoundException, NoNotesFoundException {
+        logger.debug("assessPatientRisk called for Patient ID: " + patId);
         //Create PatientAssessment object with Patient and their PatientNotes
         PatientAssessment patientAssessment = new PatientAssessment(patientRemote.getPatientById(patId),
                 historyRemote.getHistoryForPatient(patId));
@@ -36,12 +37,15 @@ public class PatientAssessmentService {
         if (patientAssessment.getNotes().size()==0) {
             throw new NoNotesFoundException(patId);
         }
+        logger.debug("Patient located. Patient has " + patientAssessment.getNotes().size() + " notes.");
 
         // Parse notes & get number of trigger terms
         int triggerCount = countTriggerTerms(patientAssessment.getNotes());
 
         // Set risk value of assessment
         calculateRisk(patientAssessment, triggerCount);
+
+        logger.debug("Risk calculated. Risk value: " + patientAssessment.getRisk());
 
         return patientAssessment;
     }
@@ -62,7 +66,10 @@ public class PatientAssessmentService {
         if (triggerCount >= 5 && patientAssessment.getAge() < 30 && patientAssessment.getPatient().getSex().equals("M")) {
             patientAssessment.setRisk(Risk.EARLYONSET);
         }
-        if (triggerCount >= 8 && patientAssessment.getAge() < 30 && patientAssessment.getPatient().getSex().equals("F")) {
+        if (triggerCount >= 7 && patientAssessment.getAge() < 30 && patientAssessment.getPatient().getSex().equals("F")) {
+            patientAssessment.setRisk(Risk.EARLYONSET);
+        }
+        if (triggerCount >= 8 && patientAssessment.getAge() > 29) {
             patientAssessment.setRisk(Risk.EARLYONSET);
         }
 
