@@ -1,10 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8"/>
+    <title>View Assessment</title>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css" >
 </head>
 <body>
-VIEW
+<div class="container">
+    <div class="row">
+        <h2 th:text="'View Patient Assessment for ' + ${patientAssessment.patient.patientId}"/>
+    </div>
+
+    <div class="row">
+        <form action="#" class="form-horizontal" style="width: 100%">
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><h4>Patient ID:</h4></label>
+                <td style="width: 10%" th:text="${patientAssessment.patient.patientId}" class="col-4"></td>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><h4>Family Name:</h4></label>
+                <td style="width: 10%" th:text="${patientAssessment.patient.familyName}" class="col-4"></td>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><h4>Given Name:</h4></label>
+                <td style="width: 10%" th:text="${patientAssessment.patient.givenName}" class="col-4"></td>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><h4>Age:</h4></label>
+                <td style="width: 10%" th:text="${patientAssessment.age}" class="col-4"></td>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><h4>Sex:</h4></label>
+                <td style="width: 10%" th:text="${patientAssessment.patient.sex}" class="col-4"></td>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label"><h4>Risk Assessment:</h4></label>
+                <td style="width: 10%" th:text="${patientAssessment.risk}" class="col-4"></td>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <a class="btn btn-danger btn-sm" href="http://localhost:8080/patient/list">Back</a>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+</body>
 </body>
 </html>

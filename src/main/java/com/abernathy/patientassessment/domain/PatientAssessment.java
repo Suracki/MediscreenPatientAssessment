@@ -9,13 +9,15 @@ import java.util.List;
 
 public class PatientAssessment {
 
-    private Patient patient;
+    Patient patient;
     private List<PatientNote> notes;
     private Risk risk;
+    private int age;
 
     public PatientAssessment(Patient patient, List<PatientNote> notes) {
         this.patient = patient;
         this.notes = notes;
+        age = getAge();
     }
 
     public Patient getPatient() {
@@ -58,6 +60,9 @@ public class PatientAssessment {
     }
 
     public int getAge() {
+        if (patient==null) {
+            return 0;
+        }
         LocalDate currentDate = LocalDate.now();
         return Period.between(patient.getDob().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(), currentDate).getYears();
     }
