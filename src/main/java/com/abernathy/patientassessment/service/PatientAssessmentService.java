@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.List;
 
@@ -40,6 +41,21 @@ public class PatientAssessmentService {
         catch (NoNotesFoundException f) {
             return new ResponseEntity<String>("Patient " + patId + " has no notes.", new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
+    }
+
+    public String patientRiskAssessmentWebRequest(int id, Model model) {
+        try {
+            PatientAssessment patientAssessment = assessPatientRisk(id);
+            model.addAttribute("patientAssessment", patientAssessment);
+            return "/assessment/view";
+        }
+        catch (PatientNotFoundException e) {
+            return "/patnotfound";
+        }
+        catch (NoNotesFoundException f) {
+            return "/patnonotes";
+        }
+
     }
 
     public PatientAssessment assessPatientRisk(int patId) throws PatientNotFoundException, NoNotesFoundException {
@@ -146,5 +162,4 @@ public class PatientAssessmentService {
         }
         return triggerCount.getTriggerCount();
     }
-
 }
