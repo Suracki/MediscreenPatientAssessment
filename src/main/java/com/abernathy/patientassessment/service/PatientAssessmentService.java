@@ -10,9 +10,14 @@ import com.abernathy.patientassessment.remote.HistoryRemote;
 import com.abernathy.patientassessment.remote.PatientRemote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class PatientAssessmentService {
 
     private final HistoryRemote historyRemote;
@@ -25,8 +30,20 @@ public class PatientAssessmentService {
         this.patientRemote = patientRemote;
     }
 
+    public ResponseEntity<String> patientRiskAssessmentApiRequest(int patId) {
+        try {
+            return new ResponseEntity<String>(assessPatientRisk(patId).toString(), new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+        catch (PatientNotFoundException e) {
+            return new ResponseEntity<String>("Patient " + patId + " not found.", new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+        catch (NoNotesFoundException f) {
+            return new ResponseEntity<String>("Patient " + patId + " has no notes.", new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+    }
+
     public PatientAssessment assessPatientRisk(int patId) throws PatientNotFoundException, NoNotesFoundException {
-        logger.debug("assessPatientRisk called for Patient ID: " + patId);
+        logger.info("assessPatientRisk called for Patient ID: " + patId);
         //Create PatientAssessment object with Patient and their PatientNotes
         PatientAssessment patientAssessment = new PatientAssessment(patientRemote.getPatientById(patId),
                 historyRemote.getHistoryForPatient(patId));
@@ -37,7 +54,7 @@ public class PatientAssessmentService {
         if (patientAssessment.getNotes().size()==0) {
             throw new NoNotesFoundException(patId);
         }
-        logger.debug("Patient located. Patient has " + patientAssessment.getNotes().size() + " notes.");
+        logger.info("Patient located. Patient has " + patientAssessment.getNotes().size() + " notes.");
 
         // Parse notes & get number of trigger terms
         int triggerCount = countTriggerTerms(patientAssessment.getNotes());
@@ -46,6 +63,8 @@ public class PatientAssessmentService {
         calculateRisk(patientAssessment, triggerCount);
 
         logger.debug("Risk calculated. Risk value: " + patientAssessment.getRisk());
+        logger.debug("Age: " + patientAssessment.getAge() + " Gender: " + patientAssessment.getPatient().getSex() +
+                " Trigger Count: " + triggerCount);
 
         return patientAssessment;
     }
@@ -81,36 +100,47 @@ public class PatientAssessmentService {
         for (PatientNote patientNote : notes) {
             String note = patientNote.getNote().toLowerCase();
             if (note.contains("hemoglobin a1c")){
+                logger.debug("hemoglobin");
                 triggerCount.addHemoglobin();
             }
             if (note.contains("microalbumin")){
+                logger.debug("microalbumin");
                 triggerCount.addMicroalbumin();
             }
             if (note.contains("body height")){
+                logger.debug("body height");
                 triggerCount.addBodyHeight();
             }
             if (note.contains("body weight")){
+                logger.debug("body weight");
                 triggerCount.addBodyWeight();
             }
             if (note.contains("smoker")){
+                logger.debug("smoker");
                 triggerCount.addSmoker();
             }
             if (note.contains("abnormal")){
+                logger.debug("abnormal");
                 triggerCount.addAbnormal();
             }
             if (note.contains("cholesterol")){
+                logger.debug("cholesterol");
                 triggerCount.addCholesterol();
             }
             if (note.contains("dizziness")){
+                logger.debug("dizziness");
                 triggerCount.addDizziness();
             }
             if (note.contains("relapse")){
+                logger.debug("relapse");
                 triggerCount.addRelapse();
             }
             if (note.contains("reaction")){
+                logger.debug("reaction");
                 triggerCount.addReaction();
             }
             if (note.contains("antibodies")){
+                logger.debug("antibodies");
                 triggerCount.addAntibodies();
             }
         }
