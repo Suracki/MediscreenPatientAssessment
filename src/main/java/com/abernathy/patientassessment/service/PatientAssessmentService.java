@@ -47,17 +47,17 @@ public class PatientAssessmentService {
         try {
             PatientAssessment patientAssessment = assessPatientRisk(id);
             model.addAttribute("patientAssessment", patientAssessment);
-            return "/assessment/view";
+            return "assessment/view";
         }
         catch (PatientNotFoundException e) {
             logger.debug("patient not found with ID " + id);
             model.addAttribute("patientId", id);
-            return "/patnotfound";
+            return "patnotfound";
         }
         catch (NoNotesFoundException f) {
             logger.debug("no notes found for patient with ID " + id);
             model.addAttribute("patientId", id);
-            return "/patnonotes";
+            return "patnonotes";
         }
 
     }
@@ -68,8 +68,6 @@ public class PatientAssessmentService {
         PatientAssessment patientAssessment = new PatientAssessment(patientRemote.getPatientById(patId),
                 historyRemote.getHistoryForPatient(patId));
         //If we could not find a patient, or they have no notes, let caller know why we cannot generate an assessment
-        System.out.println("Patient: " + patientAssessment.getPatient());
-        System.out.println("Patient Notes: " + patientAssessment.getNotes().size());
         if (patientAssessment.getPatient()==null) {
             throw new PatientNotFoundException(patId);
         }

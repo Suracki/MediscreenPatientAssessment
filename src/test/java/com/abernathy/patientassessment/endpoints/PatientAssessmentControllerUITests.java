@@ -149,7 +149,7 @@ public class PatientAssessmentControllerUITests {
         // - the model contains the expected assessment result
         // - our mock patient & history apis were called once each with the correct patient ID
         assertTrue(mvcResult.getResponse().getStatus() == 200);
-        assertTrue(mvcResult.getModelAndView().getViewName().equals("/assessment/view"));
+        assertTrue(mvcResult.getModelAndView().getViewName().equals("assessment/view"));
         assertTrue(mvcResult.getModelAndView().getModel().get("patientAssessment").toString()
                 .equals("Patient: No Risk (age 54) diabetes assessment is: None"));
         Mockito.verify(patientRemote, Mockito.times(1)).getPatientById(1);
@@ -173,7 +173,7 @@ public class PatientAssessmentControllerUITests {
         // - we receive the correct error html template
         // - our mock patient & history apis were called once each with the correct patient ID
         assertTrue(mvcResult.getResponse().getStatus() == 200);
-        assertTrue(mvcResult.getModelAndView().getViewName().equals("/patnotfound"));
+        assertTrue(mvcResult.getModelAndView().getViewName().equals("patnotfound"));
         Mockito.verify(patientRemote, Mockito.times(1)).getPatientById(1);
         Mockito.verify(historyRemote, Mockito.times(1)).getHistoryForPatient(1);
     }
@@ -195,7 +195,7 @@ public class PatientAssessmentControllerUITests {
         // - we receive the correct error html template
         // - our mock patient & history apis were called once each with the correct patient ID
         assertTrue(mvcResult.getResponse().getStatus() == 200);
-        assertTrue(mvcResult.getModelAndView().getViewName().equals("/patnonotes"));
+        assertTrue(mvcResult.getModelAndView().getViewName().equals("patnonotes"));
         Mockito.verify(patientRemote, Mockito.times(1)).getPatientById(1);
         Mockito.verify(historyRemote, Mockito.times(1)).getHistoryForPatient(1);
     }
