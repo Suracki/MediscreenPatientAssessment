@@ -3,13 +3,13 @@ package com.abernathy.patientassessment.remote;
 import com.abernathy.patientassessment.domain.Patient;
 import com.abernathy.patientassessment.domain.PatientNote;
 import com.abernathy.patientassessment.remote.interfaces.HistoryRetro;
-import com.abernathy.patientassessment.remote.interfaces.PatientRetro;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -17,6 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.util.List;
 
+@Service
 public class HistoryRemote {
 
     @Value("${docker.history.ip}")
