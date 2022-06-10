@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.abernathy</groupId>
 	<artifactId>patientassessment</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.3.0-SNAPSHOT</version>
 	<name>PatientAssessment</name>
 	<description>Patient Diabetes Assessment microservice for Mediscreen application</description>
 	<properties>
