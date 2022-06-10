@@ -3,7 +3,7 @@ package com.abernathy.patientassessment.domain;
 public class PatientNote {
 
     private String patientNoteId;
-    private String patId;
+    private int patId;
     private String note;
 
     public String getPatientNoteId() {
@@ -22,11 +22,11 @@ public class PatientNote {
         this.patientNoteId = patientNoteId;
     }
 
-    public String getPatId() {
+    public int getPatId() {
         return patId;
     }
 
-    public void setPatId(String patId) {
+    public void setPatId(int patId) {
         this.patId = patId;
     }
 
