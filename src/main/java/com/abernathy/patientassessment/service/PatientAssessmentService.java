@@ -33,7 +33,7 @@ public class PatientAssessmentService {
 
     public ResponseEntity<String> patientRiskAssessmentApiRequest(int patId) {
         try {
-            return new ResponseEntity<String>(assessPatientRisk(patId).toString(), new HttpHeaders(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<String>(assessPatientRisk(patId).toString(), new HttpHeaders(), HttpStatus.OK);
         }
         catch (PatientNotFoundException e) {
             return new ResponseEntity<String>("Patient " + patId + " not found.", new HttpHeaders(), HttpStatus.NOT_FOUND);
