@@ -3,6 +3,7 @@ package com.abernathy.patientassessment.service;
 import com.abernathy.patientassessment.domain.PatientAssessment;
 import com.abernathy.patientassessment.domain.PatientNote;
 import com.abernathy.patientassessment.domain.TriggerCount;
+import com.abernathy.patientassessment.domain.enums.Risk;
 import com.abernathy.patientassessment.exceptions.NoNotesFoundException;
 import com.abernathy.patientassessment.exceptions.PatientNotFoundException;
 import com.abernathy.patientassessment.remote.HistoryRemote;
@@ -36,11 +37,35 @@ public class PatientAssessmentService {
             throw new NoNotesFoundException(patId);
         }
 
-        // Parse notes & calculate risk
+        // Parse notes & get number of trigger terms
         int triggerCount = countTriggerTerms(patientAssessment.getNotes());
 
+        // Set risk value of assessment
+        calculateRisk(patientAssessment, triggerCount);
 
-        return null;
+        return patientAssessment;
+    }
+
+    private void calculateRisk(PatientAssessment patientAssessment, int triggerCount) {
+
+        patientAssessment.setRisk(Risk.NONE);
+
+        if (triggerCount >= 2 && patientAssessment.getAge() > 29) {
+            patientAssessment.setRisk(Risk.BORDERLINE);
+        }
+        if (triggerCount >= 3 && patientAssessment.getAge() < 30 && patientAssessment.getPatient().getSex().equals("M")) {
+            patientAssessment.setRisk(Risk.INDANGER);
+        }
+        if (triggerCount >= 4 && patientAssessment.getAge() < 30 && patientAssessment.getPatient().getSex().equals("F")) {
+            patientAssessment.setRisk(Risk.INDANGER);
+        }
+        if (triggerCount >= 5 && patientAssessment.getAge() < 30 && patientAssessment.getPatient().getSex().equals("M")) {
+            patientAssessment.setRisk(Risk.EARLYONSET);
+        }
+        if (triggerCount >= 8 && patientAssessment.getAge() < 30 && patientAssessment.getPatient().getSex().equals("F")) {
+            patientAssessment.setRisk(Risk.EARLYONSET);
+        }
+
     }
 
     private int countTriggerTerms(List<PatientNote> notes) {
