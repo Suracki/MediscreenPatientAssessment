@@ -9,12 +9,19 @@
 <body>
 <div class="container">
     <div class="row">
-        <h2 th:text="'Requested patient with ID ' + ${patientId} + ' has no notes. Unable to generate assessment.'"/>
+        <div class="col-6">
+            <a th:href="@{http://{url}/patient/list(url=${urlPat})}">Patient List</a>&nbsp;|&nbsp;
+            <a th:href="@{http://{url}/patient/note/list(url=${urlNote})}">Patient Notes</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <h2 th:text="'Could not find any notes for patient with ID ' + ${patientId} + '.<br>Unable to generate assessment.'"/>
     </div>
 
     <div class="form-group">
         <div class="col-sm-12">
-            <a class="btn btn-danger btn-sm" href="http://localhost:8080/patient/list">Back</a>
+            <a class="btn btn-danger btn-sm" th:href="@{http://{url}/patient/list(url=${urlPat})}">Back</a>
         </div>
     </div>
 

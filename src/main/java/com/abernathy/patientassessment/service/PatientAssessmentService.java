@@ -10,6 +10,7 @@ import com.abernathy.patientassessment.remote.HistoryRemote;
 import com.abernathy.patientassessment.remote.PatientRemote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,11 @@ public class PatientAssessmentService {
 
     private final HistoryRemote historyRemote;
     private final PatientRemote patientRemote;
+
+    @Value("${docker.patient.url}")
+    private String urlPat;
+    @Value("${docker.history.url}")
+    private String urlNote;
 
     private Logger logger = LoggerFactory.getLogger(PatientAssessmentService.class);
 
@@ -47,16 +53,22 @@ public class PatientAssessmentService {
         try {
             PatientAssessment patientAssessment = assessPatientRisk(id);
             model.addAttribute("patientAssessment", patientAssessment);
+            model.addAttribute("urlPat", urlPat);
+            model.addAttribute("urlNote", urlNote);
             return "assessment/view";
         }
         catch (PatientNotFoundException e) {
             logger.debug("patient not found with ID " + id);
             model.addAttribute("patientId", id);
+            model.addAttribute("urlPat", urlPat);
+            model.addAttribute("urlNote", urlNote);
             return "patnotfound";
         }
         catch (NoNotesFoundException f) {
             logger.debug("no notes found for patient with ID " + id);
             model.addAttribute("patientId", id);
+            model.addAttribute("urlPat", urlPat);
+            model.addAttribute("urlNote", urlNote);
             return "patnonotes";
         }
 
@@ -71,7 +83,7 @@ public class PatientAssessmentService {
         if (patientAssessment.getPatient()==null) {
             throw new PatientNotFoundException(patId);
         }
-        if (patientAssessment.getNotes().size()==0) {
+        if (patientAssessment.getNotes() == null || patientAssessment.getNotes().size()==0) {
             throw new NoNotesFoundException(patId);
         }
         logger.debug("Patient located. Patient has " + patientAssessment.getNotes().size() + " notes.");
