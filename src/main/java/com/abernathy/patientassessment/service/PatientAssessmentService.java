@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class PatientAssessmentService {
@@ -29,6 +29,11 @@ public class PatientAssessmentService {
     private String urlPat;
     @Value("${docker.history.url}")
     private String urlNote;
+    //Variable is initialized from application.properties in prod, variable is defined here for testing purposes
+    //This is to ensure that trigger terms are always constant for comparison in tests
+    @Value("#{'${trigger.terms.array}'.split(',')}")
+    private List<String> triggerTerms = Arrays.asList(new String[]{"hemoglobin a1c","microalbumin","body height",
+            "body weight","smoker","abnormal","cholesterol","dizziness","relapse","reaction","antibodies"});
 
     private Logger logger = LoggerFactory.getLogger(PatientAssessmentService.class);
 
@@ -89,7 +94,7 @@ public class PatientAssessmentService {
         logger.debug("Patient located. Patient has " + patientAssessment.getNotes().size() + " notes.");
 
         // Parse notes & get number of trigger terms
-        int triggerCount = countTriggerTerms(patientAssessment.getNotes());
+        int triggerCount = countTriggers(patientAssessment.getNotes());
 
         // Set risk value of assessment
         calculateRisk(patientAssessment, triggerCount);
@@ -126,56 +131,24 @@ public class PatientAssessmentService {
 
     }
 
-    private int countTriggerTerms(List<PatientNote> notes) {
-        TriggerCount triggerCount = new TriggerCount();
+    private int countTriggers(List<PatientNote> notes) {
 
+        // Iterate through all note objects & join note text together
+        String noteString = "";
         for (PatientNote patientNote : notes) {
-            String note = patientNote.getNote().toLowerCase();
-            if (note.contains("hemoglobin a1c")){
-                logger.debug("hemoglobin");
-                triggerCount.addHemoglobin();
-            }
-            if (note.contains("microalbumin")){
-                logger.debug("microalbumin");
-                triggerCount.addMicroalbumin();
-            }
-            if (note.contains("body height")){
-                logger.debug("body height");
-                triggerCount.addBodyHeight();
-            }
-            if (note.contains("body weight")){
-                logger.debug("body weight");
-                triggerCount.addBodyWeight();
-            }
-            if (note.contains("smoker")){
-                logger.debug("smoker");
-                triggerCount.addSmoker();
-            }
-            if (note.contains("abnormal")){
-                logger.debug("abnormal");
-                triggerCount.addAbnormal();
-            }
-            if (note.contains("cholesterol")){
-                logger.debug("cholesterol");
-                triggerCount.addCholesterol();
-            }
-            if (note.contains("dizziness")){
-                logger.debug("dizziness");
-                triggerCount.addDizziness();
-            }
-            if (note.contains("relapse")){
-                logger.debug("relapse");
-                triggerCount.addRelapse();
-            }
-            if (note.contains("reaction")){
-                logger.debug("reaction");
-                triggerCount.addReaction();
-            }
-            if (note.contains("antibodies")){
-                logger.debug("antibodies");
-                triggerCount.addAntibodies();
-            }
+            noteString = noteString + " " + patientNote.getNote();
         }
-        return triggerCount.getTriggerCount();
+        String finalNoteString = noteString;
+
+        List<String> termsInNotes = new ArrayList<>();
+
+        // Iterate through terms, if it is found in the notes add it to list
+        triggerTerms.forEach(term -> {
+            if (finalNoteString.toLowerCase().contains(term.toLowerCase())) {
+                termsInNotes.add(term);
+            }
+        });
+
+        return termsInNotes.size();
     }
 }
