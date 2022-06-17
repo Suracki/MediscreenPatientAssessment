@@ -2,7 +2,6 @@ package com.abernathy.patientassessment.service;
 
 import com.abernathy.patientassessment.domain.PatientAssessment;
 import com.abernathy.patientassessment.domain.PatientNote;
-import com.abernathy.patientassessment.domain.TriggerCount;
 import com.abernathy.patientassessment.domain.enums.Risk;
 import com.abernathy.patientassessment.exceptions.NoNotesFoundException;
 import com.abernathy.patientassessment.exceptions.PatientNotFoundException;
@@ -42,6 +41,13 @@ public class PatientAssessmentService {
         this.patientRemote = patientRemote;
     }
 
+    /**
+     * Method to generate assessment for Patient with ID provided via API
+     * Returns NOT_FOUND if paitent doesnt exist, or patient has no notes and cannot be assessed
+     *
+     * @param patId
+     * @return ResponseEntity of assessment and OK if successful
+     */
     public ResponseEntity<String> patientRiskAssessmentApiRequest(int patId) {
         try {
             return new ResponseEntity<String>(assessPatientRisk(patId).toString(), new HttpHeaders(), HttpStatus.OK);
@@ -54,6 +60,17 @@ public class PatientAssessmentService {
         }
     }
 
+    /**
+     * Method to generate assessment for Patient with ID provided via front end UI
+     * Generates assessment and returns appropriate page
+     * - view assessment page if successful
+     * - patnotfound error page if patient not found
+     * - patnonotes error page if patient exists but has no notes
+     *
+     * @param id
+     * @param model
+     * @return ResponseEntity of assessment and OK if successful
+     */
     public String patientRiskAssessmentWebRequest(int id, Model model) {
         try {
             PatientAssessment patientAssessment = assessPatientRisk(id);
@@ -79,6 +96,14 @@ public class PatientAssessmentService {
 
     }
 
+    /**
+     * Method to generate assessment for Patient with provided ID
+     *
+     * @param patId
+     * @throws PatientNotFoundException if Patient not found
+     * @throws NoNotesFoundException if Patient has no notes or notes could not be loaded
+     * @return PatientAssessment object containing details of patient, notes, and assessment
+     */
     public PatientAssessment assessPatientRisk(int patId) throws PatientNotFoundException, NoNotesFoundException {
         logger.info("assessPatientRisk called for Patient ID: " + patId);
         //Create PatientAssessment object with Patient and their PatientNotes
@@ -106,6 +131,7 @@ public class PatientAssessmentService {
         return patientAssessment;
     }
 
+    // Calculate patient's risk value
     private void calculateRisk(PatientAssessment patientAssessment, int triggerCount) {
 
         patientAssessment.setRisk(Risk.NONE);
@@ -131,6 +157,7 @@ public class PatientAssessmentService {
 
     }
 
+    //Count the number of trigger terms that appear in patient's notes
     private int countTriggers(List<PatientNote> notes) {
 
         // Iterate through all note objects & join note text together

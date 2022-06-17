@@ -30,6 +30,12 @@ public class HistoryRemote {
 
     private Gson gson = new GsonBuilder().setLenient().create();
 
+    /**
+     * Method to get all notes for a patient from notes database via api call
+     *
+     * @param id id of patient
+     * @return List of PatientNote objects
+     */
     public List<PatientNote> getHistoryForPatient(int id) {
         logger.info("getHistoryForPatient called");
 
