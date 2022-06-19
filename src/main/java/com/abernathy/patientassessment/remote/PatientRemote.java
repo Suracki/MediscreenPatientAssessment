@@ -27,6 +27,12 @@ public class PatientRemote {
 
     private Gson gson = new GsonBuilder().setLenient().create();
 
+    /**
+     * Method to get Patient object from patient database via api call
+     *
+     * @param id id of patient
+     * @return Patient object
+     */
     public Patient getPatientById(int id) {
         logger.info("getPatientById called");
 
