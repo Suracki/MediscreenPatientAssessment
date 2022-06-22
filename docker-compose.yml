@@ -1,0 +1,106 @@
+version: '3.1'
+
+services:
+    patientdb:
+        image: mysql
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: 'password'
+            MYSQL_DATABASE: 'mediscreen'
+        healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+            timeout: 20s
+            retries: 10
+        ports:
+            - "3310:3306"
+        expose:
+            - "3310"
+        volumes:
+            - mediscreen-db:/var/lib/mediscreen
+        container_name: patientdb
+        networks:
+            - mysql
+    adminer:
+        image: adminer
+        restart: always
+        ports: 
+            - "9000:8080"
+        expose:
+            - "9000"
+        container_name: patientdb-adminer
+        networks:
+            - mysql
+    mediscreenapp:
+        build:
+            context: ./Mediscreen
+            dockerfile: Dockerfile
+        container_name: mediscreenapp
+        depends_on:
+            patientdb:
+                condition: service_healthy
+        ports:
+            - "8080:8080"
+        networks:
+            - mysql     
+            - app
+
+    historydb:
+        image: mongo
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: password
+            MONGO_INITDB_DATABASE: mediscreen-history
+        ports:
+            - "27017:27017"
+        expose:
+            - "27017"
+        volumes:
+            - mediscreen-db:/var/lib/mediscreen-history
+        container_name: historydb
+        networks:
+            - mongo  
+    mongo-express:
+        image: mongo-express
+        container_name: historydb-mongoexpress
+        restart: always
+        ports:
+            - 9001:8081
+        environment:
+            ME_CONFIG_MONGODB_ADMINUSERNAME: root
+            ME_CONFIG_MONGODB_ADMINPASSWORD: password
+            ME_CONFIG_MONGODB_SERVER: historydb  
+        networks:
+            - mongo
+    patienthistoryapp:
+        build:
+            context: ./PatientHistory
+            dockerfile: Dockerfile
+        container_name: patienthistoryapp
+        depends_on:
+            - "mediscreenapp"
+        ports:
+            - "8181:8181"
+        networks:
+            - mongo 
+            - app
+    patientassessmentapp:
+        build:
+            context: ./PatientAssessment
+            dockerfile: Dockerfile
+        container_name: patientassessmentapp
+        depends_on:
+            - "patienthistoryapp"
+        ports:
+            - "8282:8282"
+        networks: 
+            - app
+volumes:
+    mediscreen-db:
+
+networks:
+    mysql:
+    mongo:
+    app:
+
